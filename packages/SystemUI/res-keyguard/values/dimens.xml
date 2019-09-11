@@ -46,7 +46,7 @@
     <dimen name="widget_title_bottom_margin">7dp</dimen>
     <dimen name="bottom_text_spacing_digital">0dp</dimen>
     <!-- Slice subtitle -->
-    <dimen name="widget_label_font_size">16dp</dimen>
+    <dimen name="widget_label_font_size">20dp</dimen>
     <!-- Slice offset when pulsing -->
     <dimen name="widget_pulsing_bottom_padding">48dp</dimen>
     <!-- Clock without header -->
@@ -56,7 +56,7 @@
     <dimen name="widget_small_font_stroke">0.6dp</dimen>
     <!-- Dash between clock and header -->
     <dimen name="widget_separator_width">12dp</dimen>
-    <dimen name="widget_separator_thickness">1dp</dimen>
+    <dimen name="widget_separator_thickness">0dp</dimen>
     <dimen name="widget_vertical_padding">26dp</dimen>
     <dimen name="widget_icon_bottom_padding">14dp</dimen>
     <!-- Subtitle paddings -->

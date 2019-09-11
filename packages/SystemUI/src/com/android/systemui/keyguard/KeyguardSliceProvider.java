@@ -75,7 +75,7 @@ public class KeyguardSliceProvider extends SliceProvider implements
      * Only show alarms that will ring within N hours.
      */
     @VisibleForTesting
-    static final int ALARM_VISIBILITY_HOURS = 12;
+    static final int ALARM_VISIBILITY_HOURS = 0;
 
     protected final Uri mSliceUri;
     protected final Uri mDateUri;

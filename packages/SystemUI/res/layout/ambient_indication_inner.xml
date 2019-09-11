@@ -8,8 +8,8 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="71.0dip"
-    android:layout_marginStart="64.0dip"
-    android:layout_marginEnd="64.0dip"
+    android:layout_marginStart="24.0dip"
+    android:layout_marginEnd="24.0dip"
     android:forceHasOverlappingRendering="false"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
