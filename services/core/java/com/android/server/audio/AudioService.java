@@ -2535,7 +2535,6 @@ public class AudioService extends IAudioService.Stub
     }
 
     public void setRingerModeInternal(int ringerMode, String caller) {
-        enforceVolumeController("setRingerModeInternal");
         setRingerMode(ringerMode, caller, false /*external*/);
     }
 
