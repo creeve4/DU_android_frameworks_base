@@ -437,8 +437,8 @@ public class Clock extends TextView implements DemoMode, Tunable, CommandQueue.C
             } else {
                 dateResult = dateString.toString();
             }
-            result = (mClockDatePosition == STYLE_DATE_LEFT) ? dateResult + " " + timeResult
-                    : timeResult + " " + dateResult;
+            result = (mClockDatePosition == STYLE_DATE_LEFT) ? dateResult + "  " + timeResult
+                    : timeResult + "  " + dateResult;
         } else {
             // No date, just show time
             result = timeResult;
@@ -455,9 +455,9 @@ public class Clock extends TextView implements DemoMode, Tunable, CommandQueue.C
                     formatted.delete(0, dateStringLen);
                 } else {
                     if (mClockDateDisplay == CLOCK_DATE_DISPLAY_SMALL) {
-                        CharacterStyle style = new RelativeSizeSpan(0.7f);
+                        CharacterStyle style = new RelativeSizeSpan(0.8f);
                         formatted.setSpan(style, timeStringOffset,
-                                timeStringOffset + dateStringLen,
+                                timeStringOffset + dateStringLen + 1,
                                 Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
                     }
                 }
