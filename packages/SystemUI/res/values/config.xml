@@ -205,7 +205,7 @@
     <integer name="doze_pulse_duration_in">130</integer>
 
     <!-- Doze: pulse parameter - once faded in, how long does it stay visible? -->
-    <integer name="doze_pulse_duration_visible">10000</integer>
+    <integer name="doze_pulse_duration_visible">15000</integer>
 
     <!-- Doze: pulse parameter - how long does it take to fade out? -->
     <integer name="doze_pulse_duration_out">1000</integer>
