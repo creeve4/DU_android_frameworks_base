@@ -429,8 +429,16 @@ static void UnsetChldSignalHandler() {
 
 // Calls POSIX setgroups() using the int[] object as an argument.
 // A nullptr argument is tolerated.
-static void SetGids(JNIEnv* env, jintArray managed_gids, fail_fn_t fail_fn) {
+static void SetGids(JNIEnv* env, jintArray managed_gids, jboolean is_child_zygote,
+                    fail_fn_t fail_fn) {
   if (managed_gids == nullptr) {
+    if (is_child_zygote) {
+      // For child zygotes like webview and app zygote, we want to clear out
+      // any supplemental groups the parent zygote had.
+      if (setgroups(0, NULL) == -1) {
+        fail_fn(CREATE_ERROR("Failed to remove supplementary groups for child zygote"));
+      }
+    }
     return;
   }
 
@@ -933,6 +941,13 @@ static pid_t ForkCommon(JNIEnv* env, bool is_system_server,
 
   android_fdsan_error_level fdsan_error_level = android_fdsan_get_error_level();
 
+  // Purge unused native memory in an attempt to reduce the amount of false
+  // sharing with the child process.  By reducing the size of the libc_malloc
+  // region shared with the child process we reduce the number of pages that
+  // transition to the private-dirty state when malloc adjusts the meta-data
+  // on each of the pages it is managing after the fork.
+  mallopt(M_PURGE, 0);
+
   pid_t pid = fork();
 
   if (pid == 0) {
@@ -1015,7 +1030,7 @@ static void SpecializeCommon(JNIEnv* env, uid_t uid, gid_t gid, jintArray gids,
     }
   }
 
-  SetGids(env, gids, fail_fn);
+  SetGids(env, gids, is_child_zygote, fail_fn);
   SetRLimits(env, rlimits, fail_fn);
 
   if (use_native_bridge) {

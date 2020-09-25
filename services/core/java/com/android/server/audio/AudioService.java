@@ -582,6 +582,16 @@ public class AudioService extends IAudioService.Stub
         return "card=" + card + ";device=" + device + ";";
     }
 
+    // only these packages are allowed to override Pulse visualizer lock
+    private static final String[] VISUALIZER_WHITELIST = new String[] {
+            "android",
+            "com.android.systemui",
+            "com.android.keyguard",
+            "com.google.android.googlequicksearchbox"
+    };
+
+    private boolean mVisualizerLocked;
+
     public static final class Lifecycle extends SystemService {
         private AudioService mService;
 
@@ -1493,10 +1503,13 @@ public class AudioService extends IAudioService.Stub
         }
         if (!TextUtils.isEmpty(packageName)) {
             PackageManager pm = mContext.getPackageManager();
+            ActivityManager am =
+                          (ActivityManager) mContext.getSystemService(mContext.ACTIVITY_SERVICE);
+
             if (pm.checkPermission(Manifest.permission.CAPTURE_AUDIO_HOTWORD, packageName)
                     == PackageManager.PERMISSION_GRANTED) {
                 try {
-                    assistantUid = pm.getPackageUid(packageName, 0);
+                    assistantUid = pm.getPackageUidAsUser(packageName, am.getCurrentUser());
                 } catch (PackageManager.NameNotFoundException e) {
                     Log.e(TAG,
                             "updateAssistantUId() could not find UID for package: " + packageName);
@@ -4136,6 +4149,27 @@ public class AudioService extends IAudioService.Stub
     @Override
     public boolean isStreamAffectedByMute(int streamType) {
         return (mMuteAffectedStreams & (1 << streamType)) != 0;
+    }
+
+    /** @hide */
+    @Override
+    public boolean isVisualizerLocked(String callingPackage) {
+        boolean isSystem = false;
+        for (int i = 0; i < VISUALIZER_WHITELIST.length; i++) {
+            if (TextUtils.equals(callingPackage, VISUALIZER_WHITELIST[i])) {
+                isSystem = true;
+                break;
+            }
+        }
+        return !isSystem && mVisualizerLocked;
+    }
+
+    /** @hide */
+    @Override
+    public void setVisualizerLocked(boolean doLock) {
+        if (mVisualizerLocked != doLock) {
+            mVisualizerLocked = doLock;
+        }
     }
 
     private void ensureValidDirection(int direction) {

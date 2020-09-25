@@ -558,9 +558,7 @@ public class ChooserActivity extends ResolverActivity {
                 if (!(targetsParcelable[i] instanceof Intent)) {
                     Log.w(TAG, "EXTRA_ALTERNATE_INTENTS array entry #" + i + " is not an Intent: "
                             + targetsParcelable[i]);
-                    finish();
-                    super.onCreate(null);
-                    return;
+                    continue;
                 }
                 final Intent additionalTarget = (Intent) targetsParcelable[i];
                 if (i == 0 && target == null) {
@@ -601,9 +599,7 @@ public class ChooserActivity extends ResolverActivity {
             for (int i = 0; i < count; i++) {
                 if (!(pa[i] instanceof Intent)) {
                     Log.w(TAG, "Initial intent #" + i + " not an Intent: " + pa[i]);
-                    finish();
-                    super.onCreate(null);
-                    return;
+                    continue;
                 }
                 final Intent in = (Intent) pa[i];
                 modifyTargetIntent(in);
@@ -930,7 +926,7 @@ public class ChooserActivity extends ResolverActivity {
         final ComponentName cn = getNearbySharingComponent();
         if (cn == null) return null;
 
-        final Intent resolveIntent = new Intent();
+        final Intent resolveIntent = new Intent(originalIntent);
         resolveIntent.setComponent(cn);
         final ResolveInfo ri = getPackageManager().resolveActivity(
                 resolveIntent, PackageManager.GET_META_DATA);
@@ -1097,6 +1093,13 @@ public class ChooserActivity extends ResolverActivity {
             ViewGroup parent) {
         ViewGroup contentPreviewLayout = (ViewGroup) layoutInflater.inflate(
                 R.layout.chooser_grid_preview_image, parent, false);
+
+
+        final ViewGroup actionRow =
+               (ViewGroup) contentPreviewLayout.findViewById(R.id.chooser_action_row);
+        //TODO: addActionButton(actionRow, createCopyButton());
+        addActionButton(actionRow, createNearbyButton(targetIntent));
+
         mPreviewCoord = new ContentPreviewCoordinator(contentPreviewLayout, true);
 
         String action = targetIntent.getAction();
@@ -1207,10 +1210,10 @@ public class ChooserActivity extends ResolverActivity {
         ViewGroup contentPreviewLayout = (ViewGroup) layoutInflater.inflate(
                 R.layout.chooser_grid_preview_file, parent, false);
 
-        // TODO(b/120417119): Disable file copy until after moving to sysui,
-        // due to permissions issues
-        //((ViewGroup) contentPreviewLayout.findViewById(R.id.chooser_action_row))
-        //        .addView(createCopyButton());
+        final ViewGroup actionRow =
+                (ViewGroup) contentPreviewLayout.findViewById(R.id.chooser_action_row);
+        //TODO(b/120417119): addActionButton(actionRow, createCopyButton());
+        addActionButton(actionRow, createNearbyButton(targetIntent));
 
         String action = targetIntent.getAction();
         if (Intent.ACTION_SEND.equals(action)) {

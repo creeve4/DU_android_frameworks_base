@@ -4217,6 +4217,16 @@ public class NotificationManagerService extends SystemService {
                     .exec(this, in, out, err, args, callback, resultReceiver);
         }
 
+        @Override
+        public void forceShowLedLight(int color) {
+            forceShowLed(color);
+        }
+
+        @Override
+        public void forcePulseLedLight(int color, int onTime, int offTime) {
+            forcePulseLed(color, onTime, offTime);
+        }
+
         /**
          * Get stats committed after startNs
          *
@@ -5996,7 +6006,7 @@ public class NotificationManagerService extends SystemService {
         }
         if (buzz || beep || blink) {
             // Ignore summary updates because we don't display most of the information.
-            if (record.sbn.isGroup() && record.sbn.getNotification().isGroupSummary()) {
+            if (!blink && record.sbn.isGroup() && record.sbn.getNotification().isGroupSummary()) {
                 if (DEBUG_INTERRUPTIVENESS) {
                     Slog.v(TAG, "INTERRUPTIVENESS: "
                             + record.getKey() + " is not interruptive: summary");
@@ -6022,6 +6032,24 @@ public class NotificationManagerService extends SystemService {
         record.setAudiblyAlerted(buzz || beep);
     }
 
+    private void forceShowLed(int color) {
+        if (color != -1) {
+            mNotificationLight.turnOff();
+            mNotificationLight.setColor(color);
+        } else {
+            mNotificationLight.turnOff();
+        }
+    }
+
+    private void forcePulseLed(int color, int onTime, int offTime) {
+        if (color != -1) {
+            mNotificationLight.turnOff();
+            mNotificationLight.setFlashing(color, Light.LIGHT_FLASH_TIMED, onTime, offTime);
+        } else {
+            mNotificationLight.turnOff();
+        }
+    }
+
     @GuardedBy("mNotificationLock")
     boolean canShowLightsLocked(final NotificationRecord record, boolean aboveThreshold) {
         // device lacks light
@@ -6045,18 +6073,18 @@ public class NotificationManagerService extends SystemService {
             return false;
         }
         // Suppressed because it's a silent update
-        final Notification notification = record.getNotification();
+        /*final Notification notification = record.getNotification();
         if (record.isUpdate && (notification.flags & FLAG_ONLY_ALERT_ONCE) != 0) {
             return false;
         }
         // Suppressed because another notification in its group handles alerting
         if (record.sbn.isGroup() && record.getNotification().suppressAlertingDueToGrouping()) {
             return false;
-        }
-        // not if in call or the screen's on
-        if (isInCall() || mScreenOn) {
+        }*/
+        // not if the screen's on
+        /*if (isInCall() || mScreenOn) {
             return false;
-        }
+        }*/
 
         return true;
     }
